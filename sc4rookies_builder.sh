@@ -67,7 +67,7 @@ echo "
 
 
 ## Needed for AWS Centos8 Image
-sudo dnf install firewalld
+sudo dnf install firewalld -y
 sudo systemctl enable firewalld
 sudo systemctl start firewalld
 
