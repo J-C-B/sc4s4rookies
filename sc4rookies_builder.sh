@@ -62,53 +62,6 @@ echo "
 
 
 ################################################################################################################
-## Firewalls and Networking  ####
-################################################################################################################
-
-
-## Needed for AWS Centos8 Image
-sudo dnf install firewalld -y
-sudo systemctl enable firewalld
-sudo systemctl start firewalld
-
-echo "${yellow}Firewalls and Networking${reset}"
-
-#Show original state
-firewall-cmd --list-all
-
-# add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
-
-#ubuntu
-#iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
-
-#centos 8
-firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 # firewall redirect so low port without root
-firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
-#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-firewall-cmd --add-masquerade
-
-
-#Splunk ports
-firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
-firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
-firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
-
-#Syslog listeners (if opening to external sources)
-#firewall-cmd --zone=public --add-port=514/tcp --permanent
-#firewall-cmd --zone=public --add-port=514/udp --permanent
-#firewall-cmd --zone=public --add-port=6514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/udp --permanent
-
-
-firewall-cmd --runtime-to-permanent
-firewall-cmd --reload
-#Check applied
-firewall-cmd --list-all
-
-################################################################################################################
 ## THP and file limits ####
 ################################################################################################################
 
@@ -177,9 +130,56 @@ find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 # get the repo
 dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-dnf config-manager --set-enabled PowerTools
+#dnf config-manager --set-enabled PowerTools
 
 dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
+
+################################################################################################################
+## Firewalls and Networking  ####
+################################################################################################################
+
+
+## Needed for AWS Centos8 Image
+sudo dnf install firewalld -y
+sudo systemctl enable firewalld
+sudo systemctl start firewalld
+
+echo "${yellow}Firewalls and Networking${reset}"
+
+#Show original state
+firewall-cmd --list-all
+
+# add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
+
+#ubuntu
+#iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
+
+#centos 8
+firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 # firewall redirect so low port without root
+firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
+#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
+firewall-cmd --add-masquerade
+
+
+#Splunk ports
+firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
+firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
+firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+
+#Syslog listeners (if opening to external sources)
+#firewall-cmd --zone=public --add-port=514/tcp --permanent
+#firewall-cmd --zone=public --add-port=514/udp --permanent
+#firewall-cmd --zone=public --add-port=6514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/udp --permanent
+
+
+firewall-cmd --runtime-to-permanent
+firewall-cmd --reload
+#Check applied
+firewall-cmd --list-all
 
 
 ################################################################################################################
