@@ -93,10 +93,10 @@ echo "
 sudo systemctl daemon-reload
 
 # Start the disable-thp daemon
-systemctl start disable-thp
+sudo systemctl start disable-thp
 
 # Disable THP at startup
-systemctl enable disable-thp
+sudo systemctl enable disable-thp
 
 # THP now diabled
 cat /sys/kernel/mm/transparent_hugepage/enabled
@@ -129,10 +129,10 @@ dnf update -y
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 # get the repo
-dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 #dnf config-manager --set-enabled PowerTools
 
-dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
+sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
 ################################################################################################################
 ## Firewalls and Networking  ####
@@ -141,13 +141,14 @@ dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
 ## Needed for AWS Centos8 Image
 sudo dnf install firewalld -y
-sudo systemctl enable firewalld
-sudo systemctl start firewalld
+sudo systemctl enable --now firewalld
+sudo systemctl status firewalld
 
 echo "${yellow}Firewalls and Networking${reset}"
 
 #Show original state
-firewall-cmd --list-all
+
+sudo firewall-cmd --list-all
 
 # add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
 
@@ -155,18 +156,18 @@ firewall-cmd --list-all
 #iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
 
 #centos 8
-firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 # firewall redirect so low port without root
-firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
+sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 # firewall redirect so low port without root
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
 #firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-firewall-cmd --add-masquerade
+sudo firewall-cmd --add-masquerade
 
 
 #Splunk ports
-firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
-firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
-firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
+sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
+sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
+sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
 
 #Syslog listeners (if opening to external sources)
 #firewall-cmd --zone=public --add-port=514/tcp --permanent
@@ -176,10 +177,10 @@ firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
 #firewall-cmd --zone=public --add-port=1514/udp --permanent
 
 
-firewall-cmd --runtime-to-permanent
-firewall-cmd --reload
+sudo firewall-cmd --runtime-to-permanent
+sudo firewall-cmd --reload
 #Check applied
-firewall-cmd --list-all
+sudo firewall-cmd --list-all
 
 
 ################################################################################################################
@@ -195,7 +196,7 @@ wget -O splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz 'https://www.splunk.com/bin/s
 
 tar -xf splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz
 
-chown -R splunk:splunk splunk
+sudo chown -R splunk:splunk splunk
 
 # Skip Splunk Tour and Change Password Dialog
 touch /opt/splunk/etc/.ui_login
@@ -399,9 +400,9 @@ Restart=on-abnormal
 
 sudo podman volume create splunk-sc4s-var
 sudo mkdir /opt/splunk/sc4s/ 
-mkdir /opt/splunk/sc4s/local 
-mkdir /opt/splunk/sc4s/archive 
-mkdir /opt/splunk/sc4s/tls
+sudo mkdir /opt/splunk/sc4s/local 
+sudo mkdir /opt/splunk/sc4s/archive 
+sudo mkdir /opt/splunk/sc4s/tls
 
 # SET CORRECT URL AND HEC TOKEN HERE
 echo "
@@ -454,7 +455,7 @@ sudo systemctl stop sc4s
 
 # Set ownership so configexplorer can edit the files as Splunk user
 
-chown -R splunk:splunk /opt/splunk/sc4s
+sudo chown -R splunk:splunk /opt/splunk
 
 
 sudo systemctl restart rsyslog
