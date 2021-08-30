@@ -66,6 +66,11 @@ echo "
 ################################################################################################################
 
 
+## Needed for AWS Centos8 Image
+sudo dnf install firewalld
+sudo systemctl enable firewalld
+sudo systemctl start firewalld
+
 echo "${yellow}Firewalls and Networking${reset}"
 
 #Show original state
