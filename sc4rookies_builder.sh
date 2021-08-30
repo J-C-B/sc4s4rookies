@@ -143,6 +143,7 @@ sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 sudo dnf install firewalld -y
 sudo systemctl enable --now firewalld
 sudo systemctl status firewalld
+sleep 10
 
 echo "${yellow}Firewalls and Networking${reset}"
 
@@ -155,19 +156,22 @@ sudo firewall-cmd --list-all
 #ubuntu
 #iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
 
-#centos 8
-sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 # firewall redirect so low port without root
-sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
-#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-sudo firewall-cmd --add-masquerade
-
-
 #Splunk ports
 sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
 sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
 sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
 sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
 sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+
+
+#centos 8
+sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent # firewall redirect so low port without root
+sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent # firewall redirect so low port without root
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
+sudo firewall-cmd --zone=public --add-port=80/tcp --permanent # alt Web UI Port
+#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
+sudo firewall-cmd --add-masquerade
+
 
 #Syslog listeners (if opening to external sources)
 #firewall-cmd --zone=public --add-port=514/tcp --permanent
