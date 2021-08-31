@@ -233,7 +233,7 @@ hide_settings = true
 echo "
 ## Created with JB Splunk Install script by magic
 [settings]
-httpport = 8443
+httpport = 8000
 enableSplunkWebSSL = true
 login_content = Welcome to Splunk SC4S4Rookies, It's going to be a blast - Splunk 4TW!
 " > /opt/splunk/etc/system/local/web.conf
@@ -292,7 +292,7 @@ chown -R splunk:splunk /opt/splunk
 
 echo "${yellow}Check the login page is there${reset}"
 
-curl -k https://127.0.0.1:8443/en-gb/
+curl -k https://127.0.0.1:8000/en-gb/
 
 ################################################################################################################
 ## Firewalls and Networking  ####
@@ -300,15 +300,14 @@ curl -k https://127.0.0.1:8443/en-gb/
 
 
 
-
-sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent 
-sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
-sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
-sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
-sudo firewall-cmd --add-masquerade --permanent 
-sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
-sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
+sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
+#sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
+#sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
+#sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
+#sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
+#sudo firewall-cmd --add-masquerade --permanent 
+#sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
+#sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
 sudo firewall-cmd --reload
 sudo firewall-cmd --list-all
 
