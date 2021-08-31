@@ -301,6 +301,7 @@ curl -k https://127.0.0.1:8000/en-gb/
 
 
 sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
+
 #sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
 #sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
 #sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
@@ -308,8 +309,11 @@ sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
 #sudo firewall-cmd --add-masquerade --permanent 
 #sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
 #sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
+
 sudo firewall-cmd --reload
+
 sudo firewall-cmd --list-all
+
 
 
 
