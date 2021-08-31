@@ -126,65 +126,23 @@ echo "${yellow}Update and install packages${reset}"
 
 #systemctl enable --now cockpit.socket
 
-find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
-
 # get the repo
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 #dnf config-manager --set-enabled PowerTools
 
 sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
-################################################################################################################
-## Firewalls and Networking  ####
-################################################################################################################
 
+find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 ## Needed for AWS Centos8 Image
+echo "${yellow}install firewalld${reset}"
 sudo dnf install firewalld -y
 sudo systemctl enable --now firewalld
 sudo systemctl status firewalld
 sleep 10
 
-echo "${yellow}Firewalls and Networking${reset}"
 
-#Show original state
-
-sudo firewall-cmd --list-all
-
-# add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
-
-#ubuntu
-#iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
-
-#Splunk ports
-sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
-sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
-sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
-sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
-sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
-
-
-#centos 8
-sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent # firewall redirect so low port without root
-sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent # firewall redirect so low port without root
-sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
-sudo firewall-cmd --zone=public --add-port=80/tcp --permanent # alt Web UI Port
-#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-sudo firewall-cmd --add-masquerade
-
-
-#Syslog listeners (if opening to external sources)
-#firewall-cmd --zone=public --add-port=514/tcp --permanent
-#firewall-cmd --zone=public --add-port=514/udp --permanent
-#firewall-cmd --zone=public --add-port=6514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/udp --permanent
-
-
-sudo firewall-cmd --runtime-to-permanent
-sudo firewall-cmd --reload
-#Check applied
-sudo firewall-cmd --list-all
 
 
 ################################################################################################################
@@ -335,6 +293,54 @@ chown -R splunk:splunk /opt/splunk
 echo "${yellow}Check the login page is there${reset}"
 
 curl -k https://127.0.0.1:8443/en-gb/
+
+################################################################################################################
+## Firewalls and Networking  ####
+################################################################################################################
+
+
+
+
+echo "${yellow}Firewalls and Networking${reset}"
+
+#Show original state
+
+sudo firewall-cmd --list-all
+
+# add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
+
+#ubuntu
+#iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
+
+#Splunk ports
+sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
+sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
+sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
+sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+
+
+#centos 8
+sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent # firewall redirect so low port without root
+sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent # firewall redirect so low port without root
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
+sudo firewall-cmd --zone=public --add-port=80/tcp --permanent # alt Web UI Port
+#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
+sudo firewall-cmd --add-masquerade
+
+
+#Syslog listeners (if opening to external sources)
+#firewall-cmd --zone=public --add-port=514/tcp --permanent
+#firewall-cmd --zone=public --add-port=514/udp --permanent
+#firewall-cmd --zone=public --add-port=6514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/udp --permanent
+
+
+sudo firewall-cmd --runtime-to-permanent
+sudo firewall-cmd --reload
+#Check applied
+sudo firewall-cmd --list-all
 
 
 ################################################################################################################
