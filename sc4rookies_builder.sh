@@ -122,7 +122,7 @@ DefaultLimitNPROC=16000
 
 echo "${yellow}Update and install packages${reset}"
 #Update package lists
-dnf update -y
+#dnf update -y
 
 #systemctl enable --now cockpit.socket
 
