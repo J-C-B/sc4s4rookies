@@ -321,16 +321,27 @@ sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
 sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
 ### Managment Port
 sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-## Splunk to Splunk 
+### Splunk to Splunk 
 sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
 
 
 #centos 8
-sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent # firewall redirect so low port without root
-sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent # firewall redirect so low port without root
-sudo firewall-cmd --zone=public --add-port=443/tcp --permanent # alt Web UI Port
-sudo firewall-cmd --zone=public --add-port=80/tcp --permanent # alt Web UI Port
+
+# firewall redirect so low port without root
+sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
+
+# firewall redirect so low port without root
+#sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent 
+
+# alt Web UI Port
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
+
+# alt Web UI Port
+sudo firewall-cmd --zone=public --add-port=80/tcp --permanent 
+
 #firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
+
+# add masquerade
 sudo firewall-cmd --add-masquerade
 
 
