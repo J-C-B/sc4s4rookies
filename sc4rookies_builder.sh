@@ -301,61 +301,17 @@ curl -k https://127.0.0.1:8443/en-gb/
 
 
 
-echo "${yellow}Firewalls and Networking${reset}"
-
-#Show original state
-
-sudo firewall-cmd --list-all
-
-# add 443 redirect - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-port_forwarding
-
-#ubuntu
-#iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
-
-## Splunk ports
-#### Web UI Port
 sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent 
-### HEC port
 sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
-### HEC port
 sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
-### Managment Port
 sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-### Splunk to Splunk 
 sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
-
-
-#centos 8
-
-# add masquerade
 sudo firewall-cmd --add-masquerade --permanent 
-
-# firewall redirect so low port without root
 sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
-
-# alt Web UI Port
 sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
-
-# firewall redirect so low port without root
-#sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent 
-
-# alt Web UI Port
-#sudo firewall-cmd --zone=public --add-port=80/tcp --permanent 
-
-#firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-
-#Syslog listeners (if opening to external sources)
-#firewall-cmd --zone=public --add-port=514/tcp --permanent
-#firewall-cmd --zone=public --add-port=514/udp --permanent
-#firewall-cmd --zone=public --add-port=6514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/tcp --permanent
-#firewall-cmd --zone=public --add-port=1514/udp --permanent
-
-
-#sudo firewall-cmd --runtime-to-permanent
 sudo firewall-cmd --reload
-#Check applied
 sudo firewall-cmd --list-all
+
 
 
 ################################################################################################################
