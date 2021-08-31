@@ -130,16 +130,16 @@ echo "${yellow}Update and install packages${reset}"
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 #dnf config-manager --set-enabled PowerTools
 
-sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 firewalld -y
+sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 ## Needed for AWS Centos8 Image
-echo "${yellow}install firewalld${reset}"
+#echo "${yellow}install firewalld${reset}"
 # sudo dnf install firewalld -y
-sudo systemctl enable --now firewalld
-sudo systemctl status firewalld
+#sudo systemctl enable --now firewalld
+#sudo systemctl status firewalld
 
 
 
@@ -312,7 +312,7 @@ echo "${yellow}Time for some SC4S baby!${reset}"
 echo "${yellow}Check date and TZ below!${reset}"
 date 
 
-echo "${yellow}Updating Firewall Rules${reset}"
+#echo "${yellow}Updating Firewall Rules${reset}"
 
 
 dnf install -y conntrack podman
@@ -426,9 +426,10 @@ sudo podman ps
 ## Firewalls and Networking  ####
 ################################################################################################################
 
+#sudo iptables -I INPUT -j ACCEPT
 
 
-sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
+#sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
 
 #sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
 #sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
@@ -438,6 +439,6 @@ sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
 #sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
 #sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
 
-sudo firewall-cmd --reload
+#sudo firewall-cmd --reload
 
-sudo firewall-cmd --list-all
+#sudo firewall-cmd --list-all
