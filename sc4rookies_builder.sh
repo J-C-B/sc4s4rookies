@@ -312,12 +312,17 @@ sudo firewall-cmd --list-all
 #ubuntu
 #iptables -t nat -I PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
 
-#Splunk ports
-sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent # Web UI Port
-sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
-sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
-sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
-sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+## Splunk ports
+#### Web UI Port
+sudo firewall-cmd --zone=public --add-port=8443/tcp --permanent 
+### HEC port
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
+### HEC port
+sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
+### Managment Port
+sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
+## Splunk to Splunk 
+sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
 
 
 #centos 8
@@ -337,7 +342,7 @@ sudo firewall-cmd --add-masquerade
 #firewall-cmd --zone=public --add-port=1514/udp --permanent
 
 
-sudo firewall-cmd --runtime-to-permanent
+#sudo firewall-cmd --runtime-to-permanent
 sudo firewall-cmd --reload
 #Check applied
 sudo firewall-cmd --list-all
