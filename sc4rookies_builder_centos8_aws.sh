@@ -135,13 +135,6 @@ sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
-## Needed for AWS Centos8 Image
-#echo "${yellow}install firewalld${reset}"
-# sudo dnf install firewalld -y
-#sudo systemctl enable --now firewalld
-#sudo systemctl status firewalld
-
-
 
 
 ################################################################################################################
@@ -312,9 +305,6 @@ echo "${yellow}Time for some SC4S baby!${reset}"
 echo "${yellow}Check date and TZ below!${reset}"
 date 
 
-#echo "${yellow}Updating Firewall Rules${reset}"
-
-
 dnf install -y conntrack podman
 
 echo "
@@ -421,24 +411,3 @@ sudo chown -R splunk:splunk /opt/splunk
 
 sudo systemctl restart rsyslog
 sudo podman ps
-
-################################################################################################################
-## Firewalls and Networking  ####
-################################################################################################################
-
-#sudo iptables -I INPUT -j ACCEPT
-
-
-#sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
-
-#sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
-#sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
-#sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-#sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
-#sudo firewall-cmd --add-masquerade --permanent 
-#sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
-#sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
-
-#sudo firewall-cmd --reload
-
-#sudo firewall-cmd --list-all
