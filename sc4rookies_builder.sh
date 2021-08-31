@@ -327,23 +327,22 @@ sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent
 
 #centos 8
 
+# add masquerade
+sudo firewall-cmd --add-masquerade --permanent 
+
 # firewall redirect so low port without root
 sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
+
+# alt Web UI Port
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
 
 # firewall redirect so low port without root
 #sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent 
 
 # alt Web UI Port
-sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
-
-# alt Web UI Port
-sudo firewall-cmd --zone=public --add-port=80/tcp --permanent 
+#sudo firewall-cmd --zone=public --add-port=80/tcp --permanent 
 
 #firewall-cmd --zone=public --add-port=9090/tcp --permanent # cockpit
-
-# add masquerade
-sudo firewall-cmd --add-masquerade
-
 
 #Syslog listeners (if opening to external sources)
 #firewall-cmd --zone=public --add-port=514/tcp --permanent
