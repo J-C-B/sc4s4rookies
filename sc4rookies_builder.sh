@@ -130,17 +130,16 @@ echo "${yellow}Update and install packages${reset}"
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 #dnf config-manager --set-enabled PowerTools
 
-sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
+sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 firewalld -y
 
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 ## Needed for AWS Centos8 Image
 echo "${yellow}install firewalld${reset}"
-sudo dnf install firewalld -y
+# sudo dnf install firewalld -y
 sudo systemctl enable --now firewalld
 sudo systemctl status firewalld
-sleep 10
 
 
 
@@ -294,28 +293,6 @@ echo "${yellow}Check the login page is there${reset}"
 
 curl -k https://127.0.0.1:8000/en-gb/
 
-################################################################################################################
-## Firewalls and Networking  ####
-################################################################################################################
-
-
-
-sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
-
-#sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
-#sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
-#sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
-#sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
-#sudo firewall-cmd --add-masquerade --permanent 
-#sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
-#sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
-
-sudo firewall-cmd --reload
-
-sudo firewall-cmd --list-all
-
-
-
 
 ################################################################################################################
 ## Add sc4s  ####
@@ -444,3 +421,23 @@ sudo chown -R splunk:splunk /opt/splunk
 
 sudo systemctl restart rsyslog
 sudo podman ps
+
+################################################################################################################
+## Firewalls and Networking  ####
+################################################################################################################
+
+
+
+sudo firewall-cmd --zone=public --add-port=8000/tcp --permanent
+
+#sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent 
+#sudo firewall-cmd --zone=public --add-port=8088/tcp --permanent 
+#sudo firewall-cmd --zone=public --add-port=8089/tcp --permanent
+#sudo firewall-cmd --zone=public --add-port=9997/tcp --permanent 
+#sudo firewall-cmd --add-masquerade --permanent 
+#sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8443 --permanent 
+#sudo firewall-cmd --zone=public --add-port=443/tcp --permanent 
+
+sudo firewall-cmd --reload
+
+sudo firewall-cmd --list-all
