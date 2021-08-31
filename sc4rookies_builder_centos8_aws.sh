@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 23/07/21 John Barnett
-# Script created on / for CentOS 8
-# Community script to create a Splunk Enterprise node from scratch, use at your own risk
+# 31/08/21 John Barnett
+# Script created on / for CentOS 8 (AWS)
+# Community script to create a Splunk Connect For Syslog 4ROOKIES node from scratch, use at your own risk
 # 
 
 ################################################################################################################
@@ -122,20 +122,14 @@ DefaultLimitNPROC=16000
 
 echo "${yellow}Update and install packages${reset}"
 #Update package lists
-#dnf update -y
-
-#systemctl enable --now cockpit.socket
+dnf update -y
 
 # get the repo
 sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-#dnf config-manager --set-enabled PowerTools
 
 sudo dnf install multitail htop iptraf-ng nano wget tcpdump python3 -y
 
-
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
-
-
 
 ################################################################################################################
 ## Install and setup Splunk  ####
@@ -155,7 +149,6 @@ sudo chown -R splunk:splunk splunk
 # Skip Splunk Tour and Change Password Dialog
 touch /opt/splunk/etc/.ui_login
 
-
 ########################## Adding the TAs
 
 echo "${yellow}Adding the SC4S TAs${reset}"
@@ -171,7 +164,7 @@ wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.4.spl
 
-# Splunk Apps and TAs
+########################## Splunk Apps and TAs
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/config-explorer_149.spl
 
@@ -220,7 +213,7 @@ hide_settings = true
 
 # Enable SSL Login for Splunk
 
-# Set webui port to 8443 (uses iptables port 443 redirect)
+# Set webui port to 8000
 
 echo "
 ## Created with JB Splunk Install script by magic
@@ -291,15 +284,6 @@ curl -k https://127.0.0.1:8000/en-gb/
 ## Add sc4s  ####
 ################################################################################################################
 
-
-# Script created on / for CentOS 8 - TLS Remix
-### Based on quick start here - https://splunk-connect-for-syslog.readthedocs.io/en/master/gettingstarted/quickstart_guide/
-### podman run -ti drwetter/testssl.sh --severity MEDIUM --ip 127.0.0.1 fooo:6514
-
-
-################################################################################
-########### Dont edit below here, unless you know what you are doing ###########
-################################################################################
 echo "${yellow}Time for some SC4S baby!${reset}"
 
 echo "${yellow}Check date and TZ below!${reset}"
@@ -397,10 +381,6 @@ sudo podman ps
 # Sleep to allow TLS to come up
 sleep 20
 netstat -tulpn | grep LISTEN
-#### Use command below and then type to test
-#openssl s_client -connect localhost:6514
-#### Use command below for full tls test if required (adjust as needed)
-#podman run -ti drwetter/testssl.sh --severity MEDIUM --ip 192.168.2.163 sc4sbuilder:6514
 sleep 1
 sudo systemctl stop sc4s
 
@@ -408,6 +388,6 @@ sudo systemctl stop sc4s
 
 sudo chown -R splunk:splunk /opt/splunk
 
-
 sudo systemctl restart rsyslog
+
 sudo podman ps
