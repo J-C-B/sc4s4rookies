@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 31/08/21 John Barnett
+# 02/09/21 John Barnett
 # Script created on / for CentOS 8 (AWS)
 # Community script to create a Splunk Connect For Syslog 4ROOKIES node from scratch, use at your own risk
 # 
@@ -12,7 +12,6 @@
 # Set URL and Tokens here
 HEC_URL="https://127.0.0.1:8088"
 HEC_TOKEN="e82f986a-7582-41f8-83c3-86c98ba278b6"
-#HEC_TOKEN="520b411a-3949-4c2c-948a-01eaf6a35f34"
 splunkwebpw=sc4s4logs
 
 ################################################################################################################
@@ -160,7 +159,7 @@ cd /opt/deps
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-1.0.0.spl
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.4.spl
+wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.5.spl
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.4.spl
 
@@ -242,6 +241,8 @@ token = $HEC_TOKEN
 " > /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
 
 mkdir /opt/splunk/etc/system/local/
+
+# enable defualt all index search to help attendees
 
 echo "
 ## Created with JB Splunk Install script by magic
