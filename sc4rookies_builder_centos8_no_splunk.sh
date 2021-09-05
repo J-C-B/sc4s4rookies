@@ -35,7 +35,6 @@ echo "
 
 echo "${yellow}Update and install packages${reset}"
 #Update package lists
-dnf update -y
 
 sudo dnf install nano python3 -y
 
@@ -148,6 +147,7 @@ echo "${yellow}Starting Splunk - fire it up!! and enabling Splunk to start at bo
 
 chown -R splunk:splunk /opt/splunk
 
+sudo /opt/splunk/bin/splunk restart
 
 ################################################################################################################
 ## Add sc4s  ####
@@ -259,4 +259,11 @@ sudo chown -R splunk:splunk /opt/splunk
 
 sudo systemctl restart rsyslog
 
+#sudo /opt/splunk/bin/splunk restart
+
 sudo podman ps
+
+sleep 30
+
+dnf update -y
+
