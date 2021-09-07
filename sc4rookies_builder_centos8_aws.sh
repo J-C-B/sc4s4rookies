@@ -11,7 +11,7 @@
 
 # Set URL and Tokens here
 HEC_URL="https://127.0.0.1:8088"
-#HEC_URL="https://192.168.2.15:8088, https://192.168.2.16:8088"
+#HEC_URL="https://192.168.2.15:8088,https://192.168.2.16:8088"
 HEC_TOKEN="e82f986a-7582-41f8-83c3-86c98ba278b6"
 splunkwebpw=sc4s4logs
 
