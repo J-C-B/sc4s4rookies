@@ -239,7 +239,7 @@ sudo mkdir /opt/splunk/etc/users/admin/user-prefs/local/
 
 echo"
 [general]
-render_version_messages = 1
+render_version_messages = 0
 dismissedInstrumentationOptInVersion = 4
 hideInstrumentationOptInModal = 1
 eai_app_only = True
