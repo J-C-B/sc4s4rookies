@@ -193,6 +193,64 @@ for f in *.tgz; do
   tar -xf "$f" -C /opt/splunk/etc/apps/ &
 done
 
+echo "${yellow}Hiding unwanted apps${reset}"
+
+# is_visible = true
+
+sed -i 's/is_visible = true/is_visible = 0/g' /opt/splunk/etc/apps/lookup_editor/default/app.conf
+
+sed -i 's/is_visible = true/is_visible = 0/g' /opt/splunk/etc/apps/Splunk_TA_nix/default/app.conf
+
+# is_visible = 1
+
+sed -i 's/is_visible = 1/is_visible = 0/g' /opt/splunk/etc/apps/punchcard_app/default/app.conf
+
+sed -i 's/is_visible = 1/is_visible = 0/g' /opt/splunk/etc/apps/sankey_diagram_app/default/app.conf
+
+sed -i 's/is_visible = 1/is_visible = 0/g' /opt/splunk/etc/apps/python_upgrade_readiness_app/default/app.conf
+
+# work around file integrity errors
+
+sudo mkdir /opt/splunk/etc/apps/splunk_essentials_8_2/local
+
+sudo mkdir /opt/splunk/etc/apps/splunk_secure_gateway/local
+
+echo "
+[ui]
+is_visible = 0
+
+[package]
+check_for_updates = 0
+
+" > /opt/splunk/etc/apps/splunk_secure_gateway/local/app.conf
+
+echo "
+[ui]
+is_visible = 0
+
+[package]
+check_for_updates = 0
+
+" > /opt/splunk/etc/apps/splunk_essentials_8_2/local/app.conf
+
+echo "${yellow}Setup UI${reset}"
+
+sudo mkdir /opt/splunk/etc/users/admin/user-prefs/local/
+
+echo"
+[general]
+render_version_messages = 1
+dismissedInstrumentationOptInVersion = 4
+hideInstrumentationOptInModal = 1
+eai_app_only = True
+eai_results_per_page = 25
+search_use_advanced_editor = true
+search_line_numbers = true
+search_auto_format = true
+search_syntax_highlighting = dark
+appOrder = sc4s-4rookies,TA-sc4s-datagen,config_explorer,InfoSec_App_for_Splunk,search
+
+" > /opt/splunk/etc/users/admin/user-prefs/local/user-prefs.conf
 
 echo "${yellow}Setting the config explorer to hide settings and allow editing${reset}"
 
