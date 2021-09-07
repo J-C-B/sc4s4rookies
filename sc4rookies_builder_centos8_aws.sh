@@ -47,7 +47,7 @@ echo "
 %splunk ALL= NOPASSWD: /bin/podman ps
 " >  /etc/sudoers.d/splunk
 
-echo "AllowUsers  root  splunk" >> /etc/ssh/sshd_config
+#sudo echo "AllowUsers  splunk  centos" >> /etc/ssh/sshd_config
 
 sudo systemctl restart sshd
 
