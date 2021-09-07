@@ -11,6 +11,7 @@
 
 # Set URL and Tokens here
 HEC_URL="https://127.0.0.1:8088"
+#HEC_URL="https://192.168.2.15:8088, https://192.168.2.16:8088"
 HEC_TOKEN="e82f986a-7582-41f8-83c3-86c98ba278b6"
 splunkwebpw=sc4s4logs
 
@@ -159,9 +160,9 @@ cd /opt/deps
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-1.0.0.spl
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.5.spl
+wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.6.spl
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.6.spl
+wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.7.spl
 
 ########################## Splunk Apps and TAs
 
@@ -347,16 +348,16 @@ echo "
 # Output config
 # URL to send syslog too
 
-SPLUNK_HEC_URL=$HEC_URL
+SC4S_DEST_SPLUNK_HEC_DEFAULT_URL=$HEC_URL
 
 # HEC token        
 
-SPLUNK_HEC_TOKEN=$HEC_TOKEN
+SC4S_DEST_SPLUNK_HEC_DEFAULT_TOKEN=$HEC_TOKEN
 
 #Uncomment the following line if using untrusted SSL certificates
 SC4S_DEST_SPLUNK_HEC_TLS_VERIFY=no
 
-# TLS Config, for McAfee etc if needed
+# TLS Config, if needed
 SC4S_SOURCE_TLS_ENABLE=yes
 SC4S_LISTEN_DEFAULT_TLS_PORT=6514
 " > /opt/splunk/sc4s/env_file
