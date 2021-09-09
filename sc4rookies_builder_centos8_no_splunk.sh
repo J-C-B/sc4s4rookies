@@ -89,6 +89,7 @@ for f in *.tgz; do
   tar -xf "$f" -C /opt/splunk/etc/apps/ &
 done
 
+sudo chown -R splunk:splunk splunk
 
 echo "${yellow}Setting the config explorer to hide settings and allow editing${reset}"
 
