@@ -175,21 +175,30 @@ echo "
 Description=SC4S Container
 Wants=NetworkManager.service network-online.target
 After=NetworkManager.service network-online.target
+
 [Install]
 WantedBy=multi-user.target
+
 [Service]
-Environment=\"SC4S_IMAGE=docker.io/splunk/scs:latest\"
+Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container:1\"
+
 # Required mount point for syslog-ng persist data (including disk buffer)
 Environment=\"SC4S_PERSIST_MOUNT=splunk-sc4s-var:/var/lib/syslog-ng\"
+
 # Optional mount point for local overrides and configurations; see notes in docs
 Environment=\"SC4S_LOCAL_MOUNT=/opt/splunk/sc4s/local:/etc/syslog-ng/conf.d/local:z\"
+
 # Optional mount point for local disk archive (EWMM output) files
 Environment=\"SC4S_ARCHIVE_MOUNT=/opt/splunk/sc4s/archive:/var/lib/syslog-ng/archive:z\"
+
 # Uncomment the following line if custom TLS certs are provided
 Environment=\"SC4S_TLS_MOUNT=/opt/splunk/sc4s/tls:/etc/syslog-ng/tls:z\"
+
 TimeoutStartSec=0
+
 ExecStartPre=/usr/bin/podman pull \$SC4S_IMAGE
 ExecStartPre=/usr/bin/bash -c \"/usr/bin/systemctl set-environment SC4SHOST=$(hostname -s)\"
+
 ExecStart=/usr/bin/podman run \\
         -e \"SC4S_CONTAINER_HOST=\${SC4SHOST}\" \\
         -v \$SC4S_PERSIST_MOUNT \\
@@ -200,6 +209,7 @@ ExecStart=/usr/bin/podman run \\
         --network host \\
         --name SC4S \\
         --rm \$SC4S_IMAGE
+
 Restart=on-abnormal
 " > /lib/systemd/system/sc4s.service
 
