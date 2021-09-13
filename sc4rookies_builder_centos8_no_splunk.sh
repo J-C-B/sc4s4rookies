@@ -56,7 +56,7 @@ cd /opt/deps
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-1.0.0.spl
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.7.spl
+wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.8.spl
 
 wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.7.spl
 
