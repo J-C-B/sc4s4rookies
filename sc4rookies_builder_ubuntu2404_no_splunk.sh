@@ -60,13 +60,13 @@ echo "${yellow}Adding the SC4S TAs${reset}"
 mkdir /opt/deps
 cd /opt/deps
 
-# Rookies apps
+# Rookies apps (SC4S TA + app; archives live in dependencies/ on GitHub)
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-1.0.0.spl
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-2.0.0.tar.gz"
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/sc4s-4rookies-1.0.8.spl
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/sc4s-4rookies-2.0.0.tar.gz"
 
-wget https://johnb-bucket-pub.s3.ap-southeast-2.amazonaws.com/sc4s4rookies/TA-sc4s-datagen-1.0.7.spl
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-datagen-2.0.0.tar.gz"
 
 ########################## Splunk Apps and TAs
 
