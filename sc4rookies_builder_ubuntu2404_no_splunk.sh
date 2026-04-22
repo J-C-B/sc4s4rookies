@@ -162,26 +162,24 @@ wget "${SC4S4ROOKIES_DEPS_BASE_URL}/splunk-add-on-for-unix-and-linux_1020.tgz"
 wget "${SC4S4ROOKIES_DEPS_BASE_URL}/splunk-common-information-model-cim_850.tgz"
 
 
-for f in *.spl; do
-  tar -xf "$f" -C /opt/splunk/etc/apps/ &
-done
+if [[ ! -d /opt/splunk/etc/apps ]]; then
+  echo "${red}/opt/splunk/etc/apps is missing. Splunk may not be installed correctly. Exiting.${reset}"
+  exit 1
+fi
 
-for f in *.tgz; do
-  tar -xf "$f" -C /opt/splunk/etc/apps/ &
+echo "${yellow}Extracting Splunk apps into /opt/splunk/etc/apps ...${reset}"
+shopt -s nullglob
+for f in *.spl *.tgz *.tar.gz; do
+  echo "${yellow}  ${f}${reset}"
+  tar -xf "$f" -C /opt/splunk/etc/apps/
 done
+shopt -u nullglob
 
-for f in *.tar.gz; do
-  tar -xf "$f" -C /opt/splunk/etc/apps/ &
-done
-
-sudo chown -R splunk:splunk splunk
+sudo chown -R splunk:splunk /opt/splunk
 
 echo "${yellow}Setting the config explorer to hide settings and allow editing${reset}"
 
-sudo cd /opt/splunk/etc/apps/config_explorer/
-
-sudo mkdir /opt/splunk/etc/apps/config_explorer/local
-
+sudo mkdir -p /opt/splunk/etc/apps/config_explorer/local
 
 echo "
 [global]
@@ -190,12 +188,12 @@ write_access = true
 
 hide_settings = true
 
-" > /opt/splunk/etc/apps/config_explorer/local/config_explorer.conf
+" | sudo tee /opt/splunk/etc/apps/config_explorer/local/config_explorer.conf > /dev/null
 
 
 # enable the http input function on the node
 
-sudo mkdir /opt/splunk/etc/apps/splunk_httpinput/local/
+sudo mkdir -p /opt/splunk/etc/apps/splunk_httpinput/local/
 
 echo "
 ## Created with JB Splunk Install script by magic
@@ -209,9 +207,9 @@ disabled = 0
 host = sc4s4roookieshec
 token = $HEC_TOKEN
 
-" > /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
+" | sudo tee /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf > /dev/null
 
-sudo mkdir /opt/splunk/etc/system/local/
+sudo mkdir -p /opt/splunk/etc/system/local/
 
 # enable defualt all index search to help attendees
 
@@ -226,7 +224,7 @@ search_process_config_refresh = disabled
 srchIndexesAllowed = *;_*;main
 srchIndexesDefault = *;main
 srchMaxTime = 8640000
-" > /opt/splunk/etc/system/local/authorize.conf
+" | sudo tee /opt/splunk/etc/system/local/authorize.conf > /dev/null
 
 
 echo "${yellow}Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk${reset}"
