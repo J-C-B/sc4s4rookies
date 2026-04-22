@@ -61,6 +61,14 @@ Archives in **`dependencies/`** should stay in sync with the **`wget`** lines in
 
 **Private GitHub repos:** raw URLs will not serve binaries without authentication; use a public fork, release assets, or your own reachable URL via **`SC4S4ROOKIES_DEPS_BASE_URL`**.
 
+## Troubleshooting SC4S startup messages
+
+- **`curl: (60) … certificate subject name … does not match target hostname '127.0.0.1'`** and **`SC4S_ENV_CHECK_HEC`**: Splunk’s default HEC TLS certificate is not issued for the IP `127.0.0.1`. The builder defaults **`HEC_URL`** to **`https://<this-hostname>:8088`** so the name matches typical certs. Export **`HEC_URL`** yourself if Splunk listens under another DNS name or you terminate TLS elsewhere. Keep **`SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no`** in the env file for lab/self-signed (already written by the script).
+
+- **`tls(allow-compress(yes))` / OpenSSL 3.2** warnings in logs: noise from syslog-ng inside the container; upstream SC4S image behavior. They do not block startup if you see **sc4s version=…** and **starting syslog-ng**.
+
+- **`netstat: command not found`**: Ubuntu does not ship **`netstat`** by default (and there is no `netstat` apt package). The script uses **`ss -tulpn`** instead.
+
 ## Contributing / maintenance
 
 - Keep the script header comment block updated when behavior or defaults change.  

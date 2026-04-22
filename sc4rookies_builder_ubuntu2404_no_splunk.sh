@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-22 14:25 NZST
-# Version 2.1.1
+# Last updated: 2026-04-22 15:05 NZST
+# Version 2.1.2
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -27,8 +27,14 @@
 ## Designed to run once; assumes you understand changes to rsyslog, Splunk apps, and local listeners.        ####
 ################################################################################################################
 
-# Set URL and Tokens here
-HEC_URL="https://127.0.0.1:8088"
+# Set URL and Tokens here (export before running to override)
+# Default HEC URL uses this host's name so TLS hostname matches typical Splunk default certs; https://127.0.0.1:8088
+# often fails SC4S_ENV_CHECK_HEC with curl (60) subject/hostname mismatch. Keep SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no
+# in env_file for self-signed / lab certs.
+_SC4S_HEC_HOST="$(hostname -f 2>/dev/null || true)"
+[[ -z "${_SC4S_HEC_HOST}" ]] && _SC4S_HEC_HOST="$(hostname -s)"
+: "${HEC_URL:=https://${_SC4S_HEC_HOST}:8088}"
+unset _SC4S_HEC_HOST
 HEC_TOKEN="e82f986a-7582-41f8-83c3-86c98ba278b6"
 
 # Splunk app bundles under dependencies/ in this repo (GitHub raw). Override to use a fork, branch, or commit SHA.
@@ -119,7 +125,7 @@ echo "${yellow}Update and install packages${reset}"
 #Update package lists
 
 sudo apt update 
-sudo apt install nano netstat python3 -y
+sudo apt install nano python3 -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
@@ -357,7 +363,7 @@ sudo podman logs SC4S
 sudo podman ps
 # Sleep to allow TLS to come up
 sleep 20
-netstat -tulpn | grep LISTEN
+ss -tulpn | grep LISTEN || true
 sleep 1
 sudo systemctl stop sc4s
 
