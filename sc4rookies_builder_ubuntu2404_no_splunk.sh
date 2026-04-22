@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-22 14:16 NZST
-# Version 2.1.0
+# Last updated: 2026-04-22 14:25 NZST
+# Version 2.1.1
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -274,7 +274,7 @@ After=NetworkManager.service network-online.target
 WantedBy=multi-user.target
 
 [Service]
-Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container:3\"
+Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container3:latest\"
 
 # Required mount point for syslog-ng persist data (including disk buffer)
 Environment=\"SC4S_PERSIST_MOUNT=splunk-sc4s-var:/var/lib/syslog-ng\"
@@ -292,6 +292,7 @@ TimeoutStartSec=0
 
 ExecStartPre=/usr/bin/podman pull \$SC4S_IMAGE
 ExecStartPre=/usr/bin/bash -c \"/usr/bin/systemctl set-environment SC4SHOST=$(hostname -s)\"
+ExecStartPre=/usr/bin/bash -c \"/usr/bin/podman rm SC4S > /dev/null 2>&1 || true\"
 
 ExecStart=/usr/bin/podman run \\
         -e \"SC4S_CONTAINER_HOST=\${SC4SHOST}\" \\
@@ -300,12 +301,14 @@ ExecStart=/usr/bin/podman run \\
         -v \$SC4S_ARCHIVE_MOUNT \\
         -v \$SC4S_TLS_MOUNT \\
         --env-file=/opt/splunk/sc4s/env_file \\
+        --health-cmd=\"/usr/sbin/syslog-ng-ctl healthcheck --timeout 5\" \\
+        --health-interval=2m --health-retries=6 --health-timeout=5s \\
         --network host \\
         --name SC4S \\
         --rm \$SC4S_IMAGE
 
-Restart=on-abnormal
-" > /lib/systemd/system/sc4s.service
+Restart=on-failure
+" | sudo tee /lib/systemd/system/sc4s.service > /dev/null
 
 sudo podman volume create splunk-sc4s-var
 sudo mkdir /opt/splunk/sc4s/ 
