@@ -1,15 +1,30 @@
 #!/bin/bash
-
-# 05/11/21 John Barnett
-# Script created on / for Ubuntu 20.04 (AWS)
-# Community script to create a Splunk Connect For Syslog 4ROOKIES node with existing Splunk from scratch, use at your own risk
-# 
+#
+# 05/11/21 
+# Version 2.0.0
+# sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
+#
+# Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
+# rsyslog forward to local :514, HEC input, and related Splunk-side defaults. Intended as a one-shot on a clean
+# or lab system; review before production.
+#
+# Splunk handling:
+#   • If /opt/splunk/bin/splunk exists: prompts to continue with SC4S4Rookies-only setup (no full Splunk install).
+#   • If missing: prompts to either exit, or download and run the community Enterprise install script
+#     (SPLUNK_SCRIPT_URL), then continues once the binary is present.
+#
+# Dependencies: Splunk app archives are fetched over HTTPS from GitHub raw (SC4S4ROOKIES_DEPS_BASE_URL), not
+# bundled beside the script—so a standalone copy of this script still works after values are pushed to that branch.
+# Optional Splunk installer download uses curl or wget.
+#
+# Run as root (sudo). Bash 4+ recommended (${var,,} for prompts).
+#
 
 # Set shell for splunk user if non-set (run as root)
 #usermod -s /bin/bash splunk
 
 ################################################################################################################
-## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
+## Designed to run once; assumes you understand changes to rsyslog, Splunk apps, and local listeners.        ####
 ################################################################################################################
 
 # Set URL and Tokens here
@@ -19,6 +34,9 @@ HEC_TOKEN="e82f986a-7582-41f8-83c3-86c98ba278b6"
 # Splunk app bundles under dependencies/ in this repo (GitHub raw). Override to use a fork, branch, or commit SHA.
 # Example pin: SC4S4ROOKIES_DEPS_BASE_URL=https://raw.githubusercontent.com/J-C-B/sc4s4rookies/abc1234/dependencies
 : "${SC4S4ROOKIES_DEPS_BASE_URL:=https://raw.githubusercontent.com/J-C-B/sc4s4rookies/main/dependencies}"
+
+# Full Splunk install when /opt/splunk/bin/splunk is missing (override to pin branch or fork)
+: "${SPLUNK_SCRIPT_URL:=https://raw.githubusercontent.com/J-C-B/community-splunk-scripts/master/enterprise-splunk-ubuntu2404.sh}"
 
 ################################################################################################################
 ################################################################################################################
@@ -30,7 +48,64 @@ green=`tput setaf 2`
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 
+SPLUNK_BIN="/opt/splunk/bin/splunk"
 
+echo ""
+if [[ -x "${SPLUNK_BIN}" ]]; then
+  echo "${green}Splunk is detected at ${SPLUNK_BIN}.${reset}"
+  echo "${yellow}This run will only install SC4S4Rookies components (apps, TAs, and related config), not a full Splunk install.${reset}"
+  while true; do
+    read -r -p "${yellow}Continue? (y/n): ${reset}" yn
+    case "${yn,,}" in
+      y|yes) break ;;
+      n|no) echo "${red}Aborted.${reset}"; exit 0 ;;
+      *) echo "${red}Please enter y or n.${reset}" ;;
+    esac
+  done
+else
+  echo "${yellow}Splunk was not detected (${SPLUNK_BIN} is missing or not executable).${reset}"
+  while true; do
+    read -r -p "${yellow}Install Splunk first using the community enterprise script, then continue here? (y/n): ${reset}" yn
+    case "${yn,,}" in
+      n|no)
+        echo "${red}You cannot install SC4S4Rookies without Splunk. Exiting.${reset}"
+        exit 1
+        ;;
+      y|yes) break ;;
+      *) echo "${red}Please enter y or n.${reset}" ;;
+    esac
+  done
+  echo "${yellow}Downloading and running Splunk install script...${reset}"
+  echo "${yellow}${SPLUNK_SCRIPT_URL}${reset}"
+  SPLUNK_INSTALLER="$(mktemp)"
+  _dl_ok=0
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL -o "${SPLUNK_INSTALLER}" "${SPLUNK_SCRIPT_URL}" && _dl_ok=1
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "${SPLUNK_INSTALLER}" "${SPLUNK_SCRIPT_URL}" && _dl_ok=1
+  else
+    echo "${red}Need curl or wget to download the Splunk install script. Run: sudo apt-get install -y curl${reset}"
+    rm -f "${SPLUNK_INSTALLER}"
+    exit 1
+  fi
+  if [[ "${_dl_ok}" -ne 1 ]]; then
+    echo "${red}Failed to download Splunk install script.${reset}"
+    rm -f "${SPLUNK_INSTALLER}"
+    exit 1
+  fi
+  if ! bash "${SPLUNK_INSTALLER}"; then
+    echo "${red}Splunk install script exited with an error.${reset}"
+    rm -f "${SPLUNK_INSTALLER}"
+    exit 1
+  fi
+  rm -f "${SPLUNK_INSTALLER}"
+  if [[ ! -x "${SPLUNK_BIN}" ]]; then
+    echo "${red}Splunk install finished but ${SPLUNK_BIN} is still missing or not executable. Exiting.${reset}"
+    exit 1
+  fi
+  echo "${green}Splunk is now present. Continuing with SC4S4Rookies setup...${reset}"
+fi
+echo ""
 
 #set local logs to go to sc4s
 
