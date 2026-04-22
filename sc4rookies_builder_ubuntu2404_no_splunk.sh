@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-22 15:05 NZST
-# Version 2.1.2
+# Last updated: 2026-04-22 15:23 NZST
+# Version 2.1.5
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -254,11 +254,17 @@ sudo apt install -y conntrack
 
 echo "${yellow}Install Podman${reset}"
 
-. /etc/os-release
-echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/testing/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
-curl -L "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/testing/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
+# Ubuntu 22.04+ (including 24.04) ships podman in the archive. Do not use the old OpenSUSE Kubic testing
+# repo here: it often has no Release file / bad key for new LTS, and apt-key is deprecated.
+sudo rm -f /etc/apt/sources.list.d/devel:kubic:libcontainers:testing.list
 sudo apt-get update -qq
-sudo apt-get -qq -y install podman
+if ! apt-cache show podman &>/dev/null; then
+  echo "${yellow}Enabling universe component for podman package...${reset}"
+  sudo apt-get install -y software-properties-common
+  sudo add-apt-repository -y universe
+  sudo apt-get update -qq
+fi
+sudo apt-get install -y podman
 
 
 echo "
@@ -268,6 +274,22 @@ net.core.rmem_max = 17039360
 " >> /etc/sysctl.conf
 
 sysctl -p
+
+echo "${yellow}sudoers: allow splunk user to manage sc4s and inspect the SC4S container${reset}"
+# Use user splunk (not %splunk — that is the *group* named splunk). Ubuntu installs these under /usr/bin.
+_SPLUNK_SUDO=/etc/sudoers.d/splunk-sc4s
+sudo tee "${_SPLUNK_SUDO}" > /dev/null <<'EOF'
+# sc4s4rookies: splunk user — sc4s unit + read-only podman (paths match Ubuntu 24.04)
+splunk ALL=(root) NOPASSWD: /usr/bin/systemctl start sc4s, /usr/bin/systemctl stop sc4s, /usr/bin/systemctl restart sc4s, /usr/bin/systemctl status sc4s
+splunk ALL=(root) NOPASSWD: /usr/bin/podman logs SC4S, /usr/bin/podman ps
+EOF
+sudo chmod 0440 "${_SPLUNK_SUDO}"
+if ! sudo visudo -cf "${_SPLUNK_SUDO}"; then
+  echo "${red}sudoers fragment failed visudo -cf; removing ${_SPLUNK_SUDO}${reset}"
+  sudo rm -f "${_SPLUNK_SUDO}"
+  exit 1
+fi
+unset _SPLUNK_SUDO
 
 echo "
 ## Created with JB Splunk Install script by magic

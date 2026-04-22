@@ -69,6 +69,8 @@ Archives in **`dependencies/`** should stay in sync with the **`wget`** lines in
 
 - **`netstat: command not found`**: Ubuntu does not ship **`netstat`** by default (and there is no `netstat` apt package). The script uses **`ss -tulpn`** instead.
 
+- **Podman / OpenSUSE Kubic errors** (`Release file`, **`gpg: no valid OpenPGP data`**, **`apt-key` deprecated**): older builds added an OpenSUSE testing repo that often breaks on new Ubuntu LTS. Current script installs **`podman`** from Ubuntu’s own archive (and removes the legacy `devel:kubic` list file if present). If **`podman`** is still missing, enable **`universe`** and **`sudo apt update`**.
+
 ## Contributing / maintenance
 
 - Keep the script header comment block updated when behavior or defaults change.  
