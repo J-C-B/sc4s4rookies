@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# 05/11/21 
-# Version 2.0.0
+# Last updated: 2026-04-22 14:16 NZST
+# Version 2.1.0
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -119,7 +119,7 @@ echo "${yellow}Update and install packages${reset}"
 #Update package lists
 
 sudo apt update 
-sudo apt install nano python3 -y
+sudo apt install nano netstat python3 -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
@@ -274,7 +274,7 @@ After=NetworkManager.service network-online.target
 WantedBy=multi-user.target
 
 [Service]
-Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container:1\"
+Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container:3\"
 
 # Required mount point for syslog-ng persist data (including disk buffer)
 Environment=\"SC4S_PERSIST_MOUNT=splunk-sc4s-var:/var/lib/syslog-ng\"
