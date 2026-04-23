@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-23 13:06 NZST
-# Version 2.1.8
+# Last updated: 2026-04-23 14:25 NZST
+# Version 2.1.9
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -237,6 +237,8 @@ srchMaxTime = 8640000
 " | sudo tee /opt/splunk/etc/system/local/authorize.conf > /dev/null
 
 # enable data model acceleration for Splunk_SA_CIM, so info sec app can use the data models
+
+mkdir /opt/splunk/etc/apps/Splunk_SA_CIM/local/
 
 echo "
 [Network_Traffic]
