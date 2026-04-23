@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-22 15:23 NZST
-# Version 2.1.5
+# Last updated: 2026-04-23 12:59 NZST
+# Version 2.1.7
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -28,9 +28,9 @@
 ################################################################################################################
 
 # Set URL and Tokens here (export before running to override)
-# Default HEC URL uses this host's name so TLS hostname matches typical Splunk default certs; https://127.0.0.1:8088
-# often fails SC4S_ENV_CHECK_HEC with curl (60) subject/hostname mismatch. Keep SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no
-# in env_file for self-signed / lab certs.
+# Default HEC URL uses this host's name (not 127.0.0.1). Default Splunk certs often use CN SplunkServerDefaultCert,
+# which still will not match the hostname — set SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no in env_file (note DEFAULT;
+# SC4S_DEST_SPLUNK_HEC_TLS_VERIFY without DEFAULT is ignored by SC4S).
 _SC4S_HEC_HOST="$(hostname -f 2>/dev/null || true)"
 [[ -z "${_SC4S_HEC_HOST}" ]] && _SC4S_HEC_HOST="$(hostname -s)"
 : "${HEC_URL:=https://${_SC4S_HEC_HOST}:8088}"
@@ -143,11 +143,11 @@ cd /opt/deps
 
 # Rookies apps (SC4S TA + app; archives live in dependencies/ on GitHub)
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-2.0.0.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-2.0.1.tar.gz"
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/sc4s-4rookies-2.0.0.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/sc4s-4rookies-2.0.1.tar.gz"
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-datagen-2.0.0.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-datagen-2.0.2.tar.gz"
 
 ########################## Splunk Apps and TAs
 
@@ -231,6 +231,26 @@ srchIndexesAllowed = *;_*;main
 srchIndexesDefault = *;main
 srchMaxTime = 8640000
 " | sudo tee /opt/splunk/etc/system/local/authorize.conf > /dev/null
+
+# enable data model acceleration for Splunk_SA_CIM, so info sec app can use the data models
+
+echo "
+[Network_Traffic]
+acceleration = 1
+acceleration.manual_rebuilds = 1
+
+[Network_Sessions]
+acceleration = 1
+acceleration.manual_rebuilds = 1
+
+[Web]
+acceleration = 1
+acceleration.manual_rebuilds = 1
+
+[Authentication]
+acceleration = 1
+acceleration.manual_rebuilds = 1
+" | sudo tee /opt/splunk/etc/apps/Splunk_SA_CIM/local/datamodels.conf  > /dev/null
 
 
 echo "${yellow}Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk${reset}"
@@ -357,8 +377,8 @@ SC4S_DEST_SPLUNK_HEC_DEFAULT_URL=$HEC_URL
 
 SC4S_DEST_SPLUNK_HEC_DEFAULT_TOKEN=$HEC_TOKEN
 
-#Uncomment the following line if using untrusted SSL certificates
-SC4S_DEST_SPLUNK_HEC_TLS_VERIFY=no
+# Disable TLS verify for HEC (required for default Splunk lab certs / CN mismatch); must be *_DEFAULT_* per Splunk docs
+SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no
 
 # TLS Config, if needed
 SC4S_SOURCE_TLS_ENABLE=yes

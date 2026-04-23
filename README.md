@@ -63,7 +63,7 @@ Archives in **`dependencies/`** should stay in sync with the **`wget`** lines in
 
 ## Troubleshooting SC4S startup messages
 
-- **`curl: (60) … certificate subject name … does not match target hostname '127.0.0.1'`** and **`SC4S_ENV_CHECK_HEC`**: Splunk’s default HEC TLS certificate is not issued for the IP `127.0.0.1`. The builder defaults **`HEC_URL`** to **`https://<this-hostname>:8088`** so the name matches typical certs. Export **`HEC_URL`** yourself if Splunk listens under another DNS name or you terminate TLS elsewhere. Keep **`SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no`** in the env file for lab/self-signed (already written by the script).
+- **`curl: (60) … does not match target hostname`** and **`SC4S_ENV_CHECK_HEC`**: Default Splunk certs often use CN **`SplunkServerDefaultCert`**, which does not match **`127.0.0.1`** or your real hostname, so TLS hostname verification fails. The builder sets **`HEC_URL`** to **`https://<this-hostname>:8088`** (better than the IP) and **`SC4S_DEST_SPLUNK_HEC_DEFAULT_TLS_VERIFY=no`** in **`/opt/splunk/sc4s/env_file`**. The variable name must include **`DEFAULT`** — **`SC4S_DEST_SPLUNK_HEC_TLS_VERIFY`** (without **`DEFAULT`**) is **ignored** by SC4S. After fixing **`env_file`**, run **`sudo systemctl restart sc4s`**.
 
 - **`tls(allow-compress(yes))` / OpenSSL 3.2** warnings in logs: noise from syslog-ng inside the container; upstream SC4S image behavior. They do not block startup if you see **sc4s version=…** and **starting syslog-ng**.
 
