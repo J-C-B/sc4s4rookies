@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-23 12:59 NZST
-# Version 2.1.7
+# Last updated: 2026-04-23 13:06 NZST
+# Version 2.1.8
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -99,6 +99,10 @@ else
     rm -f "${SPLUNK_INSTALLER}"
     exit 1
   fi
+  # Patch out the blocking `multitail` tail at the end of the Splunk install script so this
+  # wrapper script continues without waiting for user interaction.
+  echo "${yellow}Patching Splunk install script to disable blocking multitail call...${reset}"
+  sed -i 's|^\(multitail .*\)$|# [sc4s4rookies] non-interactive: \1|' "${SPLUNK_INSTALLER}"
   if ! bash "${SPLUNK_INSTALLER}"; then
     echo "${red}Splunk install script exited with an error.${reset}"
     rm -f "${SPLUNK_INSTALLER}"
