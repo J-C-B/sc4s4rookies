@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-30 14:34 NZST
-# Version 2.2.1
+# Last updated: 2026-04-30 14:41 NZST
+# Version 2.2.2
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -103,6 +103,18 @@ else
   # wrapper script continues without waiting for user interaction.
   echo "${yellow}Patching Splunk install script to disable blocking multitail call...${reset}"
   sed -i 's|^\(multitail .*\)$|# [sc4s4rookies] non-interactive: \1|' "${SPLUNK_INSTALLER}"
+  # Patch out the global-banner.conf block written by the install script — it sets a banner
+  # that conflicts with the SC4S4Rookies app banner added later in this script.
+  echo "${yellow}Patching Splunk install script to suppress global-banner.conf creation...${reset}"
+  python3 -c "
+import re
+p = open('${SPLUNK_INSTALLER}').read()
+p = re.sub(
+    r'echo\s+\"[^\"]*BANNER_MESSAGE_SINGLETON[^\"]*\"\s*>\s*/opt/splunk/etc/system/local/global-banner\.conf',
+    '# [sc4s4rookies] non-interactive: global-banner suppressed',
+    p, flags=re.DOTALL)
+open('${SPLUNK_INSTALLER}', 'w').write(p)
+"
   if ! bash "${SPLUNK_INSTALLER}"; then
     echo "${red}Splunk install script exited with an error.${reset}"
     rm -f "${SPLUNK_INSTALLER}"
