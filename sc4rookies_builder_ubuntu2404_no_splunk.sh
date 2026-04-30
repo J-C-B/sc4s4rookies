@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-30 15:46 NZST
-# Version 2.2.3
+# Last updated: 2026-05-01 11:22 NZST
+# Version 2.2.4
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -159,11 +159,11 @@ cd /opt/deps
 
 # Rookies apps (SC4S TA + app; archives live in dependencies/ on GitHub)
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-2.0.1.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-2.0.2.tar.gz"
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/sc4s-4rookies-2.0.4.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/sc4s-4rookies-2.0.5.tar.gz"
 
-wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-datagen-2.0.3.tar.gz"
+wget "${SC4S4ROOKIES_DEPS_BASE_URL}/TA-sc4s-datagen-2.0.4.tar.gz"
 
 ########################## Splunk Apps and TAs
 
