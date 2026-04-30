@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Last updated: 2026-04-30 14:41 NZST
-# Version 2.2.2
+# Last updated: 2026-04-30 15:46 NZST
+# Version 2.2.3
 # sc4s4rookies — Ubuntu 24.04 builder (John Barnett)
 #
 # Purpose: Prepare a host for Splunk Connect for Syslog (SC4S) “4 rookies” style use—install Splunk apps/TAs,
@@ -269,6 +269,30 @@ acceleration.manual_rebuilds = 1
 acceleration = 1
 acceleration.manual_rebuilds = 1
 " | sudo tee /opt/splunk/etc/apps/Splunk_SA_CIM/local/datamodels.conf  > /dev/null
+
+# Hide all apps from the Splunk navigation bar except the ones rookies need to interact with.
+# Every app gets [ui]\nis_visible = false written into its local/app.conf unless it is
+# explicitly listed in _VISIBLE_APPS below.
+echo "${yellow}Hiding non-essential apps from the Splunk menu...${reset}"
+_VISIBLE_APPS=("sc4s-4rookies" "TA-sc4s-datagen" "InfoSec_App_for_Splunk" "config_explorer" "search")
+for _app_dir in /opt/splunk/etc/apps/*/; do
+  _app_name=$(basename "${_app_dir}")
+  _keep_visible=0
+  for _v in "${_VISIBLE_APPS[@]}"; do
+    if [[ "${_app_name}" == "${_v}" ]]; then
+      _keep_visible=1
+      break
+    fi
+  done
+  if [[ "${_keep_visible}" -eq 0 ]]; then
+    sudo mkdir -p "${_app_dir}local"
+    printf '[ui]\nis_visible = false\n' | sudo tee "${_app_dir}local/app.conf" > /dev/null
+    echo "${yellow}  Hidden: ${_app_name}${reset}"
+  else
+    echo "${green}  Visible (kept): ${_app_name}${reset}"
+  fi
+done
+unset _VISIBLE_APPS _app_dir _app_name _keep_visible _v
 
 
 echo "${yellow}Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk${reset}"
